@@ -18,9 +18,7 @@ package com.example.android.devbyteviewer
 
 import android.app.Application
 import android.content.Context
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
+import androidx.work.*
 import com.example.android.devbyteviewer.work.RefreshDataWorker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -68,7 +66,15 @@ class DevByteApplication : Application() {
  * Setup WorkManager background job to 'fetch' new network data daily.
  */
 private fun setupRecurringWork(context: Context) {
+
+    val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.UNMETERED).build()
+
+
+    /**
+     *  The minimum interval for periodic work is 15 minutes.
+     * */
     val repeatingRequest = PeriodicWorkRequestBuilder<RefreshDataWorker>(1, TimeUnit.DAYS)
+        .setConstraints(constraints)
         .build()
 
     Timber.d("setupRecurringWork")
