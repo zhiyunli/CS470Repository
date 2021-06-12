@@ -18,6 +18,7 @@ package com.example.android.devbyteviewer
 
 import android.app.Application
 import android.content.Context
+import android.os.Build
 import androidx.work.*
 import com.example.android.devbyteviewer.work.RefreshDataWorker
 import kotlinx.coroutines.CoroutineScope
@@ -67,7 +68,16 @@ class DevByteApplication : Application() {
  */
 private fun setupRecurringWork(context: Context) {
 
-    val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.UNMETERED).build()
+    val constraints = Constraints.Builder()
+        .setRequiredNetworkType(NetworkType.UNMETERED)
+        .setRequiresBatteryNotLow(true)
+        .setRequiresCharging(true)
+        .apply {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                setRequiresDeviceIdle(true)
+            }
+        }
+        .build()
 
 
     /**
