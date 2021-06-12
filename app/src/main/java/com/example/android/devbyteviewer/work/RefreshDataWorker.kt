@@ -6,6 +6,7 @@ import androidx.work.WorkerParameters
 import com.bumptech.glide.load.HttpException
 import com.example.android.devbyteviewer.database.getDatabase
 import com.example.android.devbyteviewer.repository.VideosRepository
+import timber.log.Timber
 
 class RefreshDataWorker (appContext: Context, params: WorkerParameters) : CoroutineWorker (appContext, params){
 
@@ -19,9 +20,14 @@ class RefreshDataWorker (appContext: Context, params: WorkerParameters) : Corout
         val repository = VideosRepository(database)
         try {
             repository.refreshVideos()
+            Timber.d("WorkManager: Work request for sync is run")
         } catch (e: HttpException) {
             return Result.retry()
         }
         return Result.success()
+    }
+
+    companion object {
+        const val WORK_NAME = "com.example.android.devbyteviewer.work.RefreshDataWorker"
     }
 }
